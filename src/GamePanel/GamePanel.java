@@ -6,6 +6,8 @@ package GamePanel;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.text.DecimalFormat;
 
 /**
@@ -26,7 +28,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
 
     protected volatile boolean isPaused = false;
     
-    protected java.awt.Graphics dbg;
+    protected java.awt.Graphics2D dbg;
     protected java.awt.image.BufferedImage dbImage = null;
     
     protected String msg = "THE GAME IS OVER";
@@ -118,7 +120,9 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     }  // end of GamePanel(long)
 
 
-    
+    /***
+     * Default constructor that sets period to the default period
+     */
     public GamePanel() {
         this(1000/FPS);
     }
@@ -193,21 +197,21 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     }
     
     
-    /*
+    /**
      * this function is called before the gameloop starts in run()
      */
     protected void preGameLoop() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    /*
+    /**
      * this function is called after the gameloop ends in run()
      */
     protected void postGameLoop() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
-    /*
+    /**
      * this function is called within the gameloop in run()
      */
     protected void insideGameLoop() {
@@ -241,9 +245,9 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     } // end of addNotify()
     
     /**
-     * initialize and stat the thread
+     * initialize and start the thread
      */
-    private void startGame() {
+    public void startGame() {
         if (animator == null || !running) {
             animator = new Thread(this);
             animator.start();
@@ -383,7 +387,10 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
 //                return;
             }
         } else {
-            dbg = dbImage.getGraphics();
+            dbg = (Graphics2D)dbImage.getGraphics();
+            dbg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            dbg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            
         }
         
         // draw game elements

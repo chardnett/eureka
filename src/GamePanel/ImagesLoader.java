@@ -7,7 +7,9 @@ package GamePanel;
 
 import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +25,15 @@ public class ImagesLoader {
     private final String IMAGE_DIR = "images/";
     private GraphicsConfiguration graphicsConfig;
     
+    
+    public ImagesLoader() {
+        imagesMap = new HashMap();
+        gNamesMap = new HashMap();
+        
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        graphicsConfig = ge.getDefaultScreenDevice().getDefaultConfiguration();
+        
+    }
     
     /**
      * Loads a single image from a file. This is the external interface for 
@@ -58,8 +69,7 @@ public class ImagesLoader {
      */
     private BufferedImage loadImage(String fileName) {
         try {
-            BufferedImage image = ImageIO.read(
-                    getClass().getResource(IMAGE_DIR + fileName));
+            BufferedImage image = ImageIO.read(new File(IMAGE_DIR + fileName));
             int transparency = image.getColorModel().getTransparency();
             BufferedImage copy = graphicsConfig.createCompatibleImage(image.getWidth(),
                     image.getHeight(), transparency);
@@ -102,10 +112,10 @@ public class ImagesLoader {
      * @param transparency  is the transparency value for the image
      */
     private void reportTransparency(String string, int transparency) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println("Transparency Report for " + string + " has transparency = " + transparency);
     } // end of reportTransparency
 
-    BufferedImage getImage(String imageName) {
+    public BufferedImage getImage(String imageName) {
         
         if (gNamesMap.containsKey(imageName))
             return (BufferedImage)((ArrayList)gNamesMap.get(imageName)).get(0);
