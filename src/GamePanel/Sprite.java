@@ -18,8 +18,8 @@ import java.awt.image.BufferedImage;
 public class Sprite {
     
     // default step sizes
-    private static final int XSTEP = 5;
-    private static final int YSTEP = 5;
+    private static final int XSTEP = 1;
+    private static final int YSTEP = 1;
     
     // default image size when no image exists
     private static final int SIZE = 12;
@@ -28,8 +28,9 @@ public class Sprite {
     // image loading support
     protected ImagesLoader imsLoader;
     
+    // CRH: not needed
     // panel dimensions
-    protected int pWidth, pHeight;
+    // protected int pWidth, pHeight;
     
     
     // location data
@@ -52,11 +53,13 @@ public class Sprite {
     // sprite is updated and drawn only when active
     protected boolean isActive = true;
     
-
-    public Sprite(String name, ImagesLoader imsLoader, int pWidth, int pHeight, int locx, int locy) {
+    public Sprite() {
+        
+    }
+    
+    
+    public Sprite(String name, ImagesLoader imsLoader,int locx, int locy) {
         this.imsLoader = imsLoader;
-        this.pWidth = pWidth;
-        this.pHeight = pHeight;
         this.locx = locx;
         this.locy = locy;
         this.dx = XSTEP;
@@ -64,7 +67,7 @@ public class Sprite {
         setImage(name);
     }
 
-    public void setImage(String name) {
+    public final void setImage(String name) {
        this.imageName = name;
        image = imsLoader.getImage(imageName);
        
@@ -78,7 +81,7 @@ public class Sprite {
            height = image.getHeight();
        }
        
-       // no impage loop playing (not supported
+       // no image loop playing (not supported)
        //player = null;
        //isLooping = false;
     }
@@ -110,7 +113,9 @@ public class Sprite {
             locx += dx;
             locy += dy;
 
-            // not supported
+            // not supported (sprite animation)
+            // this is for supporting sprite animation when the image contains
+            // multiple frames that can be cycled through
 /*            if (isLooping)
                player.updateTick();
 */
@@ -119,20 +124,18 @@ public class Sprite {
     
     
     public void drawSprite(Graphics g) {
-        if (isActive()) {
+        if (isActive()) { // only draw if the sprite is active
             if (image == null) {
                 g.setColor(Color.YELLOW);
                 g.fillOval(locx, locy, SIZE, SIZE);
                 g.setColor(Color.BLACK);
-            }
-        } else {
-            /*
+            } else {
+                /* not supported (sprite animation)
              if (isLooping)
                 image = player.getCurrentImage();
             */
-            g.drawImage(image, locx, locy, null);
-            
+                 g.drawImage(image, locx, locy, null);
+            }
         }
-        
     }
 }

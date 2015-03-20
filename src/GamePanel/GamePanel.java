@@ -17,38 +17,88 @@ import java.text.DecimalFormat;
  */
 public class GamePanel extends javax.swing.JPanel implements Runnable{
 
-    // variables for the Game Panel
+    /**
+     * The width of the game panel where the screen is drawn
+     */
     public static final int PWIDTH = 800;
-    public static final int PHEIGHT = 600;
-    
-    protected Thread animator;    // process animation
-    protected volatile boolean running = false;  // stop animation
-    
-    protected volatile boolean gameOver = false; // game termination
+    private static int panelWidth = 800;
 
+    
+     /**
+     * The height of the game panel where the screen is drawn
+     */
+    public static final int PHEIGHT = 600;
+    private static int panelHeight = 600;
+    
+    /**
+     * The thread that is dedicated to run the game loop.
+     * @see #run() 
+     */
+    protected Thread animator;  
+    
+    /**
+     * The flag used by the game loop to determine if it should continue to execute. 
+     * When this is true the game loop executes, and when its false the game loop 
+     * terminates.
+     */
+    protected volatile boolean running = false;  
+
+    /**
+     * The flag to determine if the game over message should be displayed.
+     */
+    protected volatile boolean gameOver = false; 
+    
+    /**
+     * The flag to determine if the game is currently paused. When the game is paused 
+     * the methods in the game loop are not called.
+     * @see #run() 
+     */
     protected volatile boolean isPaused = false;
     
+    /**
+     * The canvas for drawing a frame of the game. You will use this object in 
+     * your version of the customizeGameRender() method of your derived class. 
+     * @see #customizeGameRender() 
+     */
     protected java.awt.Graphics2D dbg;
+    
+    /**
+     * The background double buffered image. The screen is drawn here by the game
+     * engine before it is painted onto the dbg.
+     */
     protected java.awt.image.BufferedImage dbImage = null;
     
+    /**
+     * This is the string that holds the game over message.
+     */
     protected String msg = "THE GAME IS OVER";
     
-    // this is the desired FPS
+    /**
+     * This is the desired frames per second (FPS)
+     */
     protected static final long FPS = 32L;
             
-    // the length of time for one iteration to meet the desired FPS
+    /**
+     * The length of time for one iteration to meet the desired FPS
+     */
     protected long period;
     
-    
-    // number of frames with a delay of 0 ms before the animation thread
-    // yields to other running threads.
+    /**
+     * The number of frames with a delay of 0 ms before the animation thread
+     * yields to other running threads.
+     */
     private static final int NO_DELAYS_PER_YIELD = 16;
     
-    // # of frames that can be skipped in any  one animation loop
-    // i.e. the games state is updated but not rendered
+    /**
+     * The # of frames that can be skipped in any  one animation loop
+     * the games state is updated but not rendered.
+     */
+ 
     private static int MAX_FRAMES_SKIPS = 5;
-    
-    // records stats every 1 seccond 
+
+    /**
+     * The frequency for storing performance statistics is set to 1 second
+     */
     private static long MAX_STATS_INTERVAL = 1000L; 
     
     // number of FPS and UPS values stored for stats
@@ -76,8 +126,12 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
  
     /**
-     * Creates new form GamePanel
-     * 
+     * This constructor creates new form GamePanel using the period passed in as
+     * a parameter. It also initializes the JPanel for the game, sets up the
+     * MouseListner, initializes the FPS and UPS stats, and it calls the 
+     * customizeInit() method.
+     * @see #customizeInit() 
+     * @see #storeStats() 
      * @param p The period
      */
     public GamePanel(long p) {
@@ -121,7 +175,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
 
 
     /***
-     * Default constructor that sets period to the default period
+     * The default constructor that sets period to the default period of the game
+     * loop to 1000/FPS ms. 
      */
     public GamePanel() {
         this(1000/FPS);
@@ -130,21 +185,23 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     
     /**
-     * pauses the game
+     * This method places the game loop in a paused state. In the paused state 
+     * there are no updates to the game play or screen.
      */
     public void pauseGame() {
         isPaused=true;
     }
     
     /**
-     * resumes the game
+     * This method resumes the game from its paused state.
      */
     public void resumeGame() {
         isPaused = false;
     }
 
     /**
-     * set the boolean gameover that controls the display of the game over message
+     * This method allows you to set the value of the gameOver flag in the game
+     * engine that controls whether or not a game over message is displayed.
      * @param gameOver true shows the message / false does not show message
      */
     public void setGameOver(boolean gameOver) {
@@ -153,7 +210,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     
     /**
-     * Sets the game over message string
+     * This method is used to set the message to display as the game over message.
      * @param msg the string containing the game over message
      */
     public void setMsg(String msg) {
@@ -161,36 +218,54 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     }
 
     /**
-     * obtains the value of the game over flag
+     * This method returns the value of the gameOver flag of the engine. The gameOver
+     * flag is set by the setGameOver(boolean) method. When the gameOver is set the
+     * game will display the message, if the flag is not set then no message is
+     * displayed.
+     * @see #setGameOver(boolean) 
      * @return true or false 
      */
     public boolean isGameOver() {
         return gameOver;
     }
     
+    /**
+     * The purpose of this method is to allow customization of the constructor
+     * for the Gamepanel class. This is where you will put code that you would 
+     * like to execute as your GamePanel derived class object is being constructed. 
+     * @see #GamePanel(long) 
+     * @see GamePanel.GamePanel
+     */
     public void customizeInit() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
     
     /**
-     * This is the Render() method that should be overridden during inheritance and
-     * customized for your game to handle frame rendering.
+     * The purpose of this method is to allow customization of the frame rendering
+     * phase of the game loop. This method is overridable and is called within
+     * the game loop (see the run()) method.
+     * @see #run() 
      */
     public void customizeGameRender() {
             throw new UnsupportedOperationException("customizeGameRender(): Not yet implemented");
     }
     
     /**
-     * This is the GameUpdate() method that should be overridden during inheritance
-     * and customized for your game to handle frame updates.
+     * The purpose of this method is to allow customization of the frame update 
+     * phase of the game loop. This method is overridable and is called within 
+     * the game loop (see the run()) method. 
+     * @see #run() 
      */
     public void customizeGameUpdate() {
             throw new UnsupportedOperationException("customizeGameUpdate(): Not yet implemented");
     }
     
     /**
-     * This is the testPresss() method that should be overridden during inheritance
-     * and customized for your game to handle mouse events.
+     * The purpose of this method is to allow customization of your games' 
+     * handling of mouse events. This method is overridable and is registered 
+     * with the MouseListener.
+     * @param x is the value of the x-coordinate of the mouse click
+     * @param y is the value of the y-coordinate of the mouse click
      */            
     public void customizeTestPress(int x, int y) {
         throw new UnsupportedOperationException("customizeTestPress(): Not yet implemented");
@@ -198,21 +273,30 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     
     /**
-     * this function is called before the gameloop starts in run()
+     * The purpose of this method is to provide a way of performing operations
+     * immediately before the first iteration of the game loop. This method 
+     * is overridable and is called within the game loop (see the run()) method.
+     * @see #run()
      */
     protected void preGameLoop() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
-     * this function is called after the gameloop ends in run()
+     * The purpose of this method is to provide a way of performing operations
+     * immediately after the game loop has terminated. This method 
+     * is overridable and is called within the gameloop (see the run()) method.
+     * @see #run()
      */
     protected void postGameLoop() {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
     /**
-     * this function is called within the gameloop in run()
+     * The purpose of this method is to provide a way of performing additional 
+     * housekeeping at the end of each iteration of the game loop. This method 
+     * is overridable and is called within the gameloop (see the run()) method. 
+     * @see #run() 
      */
     protected void insideGameLoop() {
         throw new UnsupportedOperationException("Not yet implemented");
@@ -221,6 +305,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
      * is (x,y) important to the game?
      * @param x the x-coordinate of the mouse
      * @param y the y-coordinate of the mouse
+     * @see #GamePanel(long) 
      */
      private void testPress(int x, int y) {
          if (!isPaused && !gameOver) {
@@ -235,7 +320,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     
     /**
-     * wait for the JPanel to be added to the JFrame/JApplet before starting.
+     * This method is used wait for the JPanel to be added to the JFrame/JApplet before starting.
      */
     @Override
     public void addNotify() {
@@ -245,7 +330,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     } // end of addNotify()
     
     /**
-     * initialize and start the thread
+     * This method is used to invoke the game by creating a thread for the game loop
+     * to execute on. 
      */
     public void startGame() {
         if (animator == null || !running) {
@@ -257,7 +343,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     
     /**
-     * called by the user to stop execution
+     * This method is used to terminate the game loop after the current iteration is 
+     * completed. 
      */
     public void stopGame() {
         running = false;
@@ -265,9 +352,26 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     
     /**
-     * Repeatedly update, render, sleep so loop takes close to period of 
-     * nsecs. Sleep inaccuracies are handled. The timing calculation uses the 
-     * Java 3D timer.
+     * This is the game loop that is central to the operation of the game engine. It 
+     * Repeatedly updates, renders, etc. by calling the following methods in this order:<p>
+     *    1. private gameUpdate(): This updates the game state and calls the public method 
+     * customizeGameUpdate() that can be overridden by a derived class.<br>
+     *    2. private gameRender(): This draws the next frame onto the game canvas. It 
+     * calls the public method customizeGameRender() that can be overridden by a derived class<br>
+     *    3. private paintScreen(): This draws the next frame onto the screen. <br>
+     *    4. private storeStats(): Gathers and stores statistics for Frames Per Second (FPS)
+     * and Updates Per Second (UPS). These stats can be accessed via a collection of getters.<br>
+     *    5. protected insideGame(): An overridable utility method that can optionally be used to 
+     * perform additional housekeeping.<br>
+     * <p>
+     * Outside of the game loop there are other methods called that can be overridden in a 
+     * derived class:<p>
+     *    1. protected preGameLoop(): This method is called immediately before the game loop
+     * starts.<br>
+     *    2. protected postGameLoop(): This method is called immediately following the termination
+     * of the game loop.<br>
+     *  <p>
+     * In addition, the game loop regulates itself to maintain FPS goal. 
      */
     @Override
     public void run() {
@@ -281,7 +385,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
            
         
         
-        gameStartTime = com.sun.j3d.utils.timer.J3DTimer.getValue();
+        gameStartTime = java.lang.System.nanoTime(); 
         prevStatsTime = gameStartTime;
         beforeTime = gameStartTime;
        
@@ -298,7 +402,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
             gameRender(); // render to a buffer
             paintScreen(); // draw buffer to screen
             
-            afterTime = com.sun.j3d.utils.timer.J3DTimer.getValue();
+            afterTime = java.lang.System.nanoTime(); 
             timeDiff = afterTime - beforeTime;
             sleepTime = (period - timeDiff) - overSleepTime;
             
@@ -307,7 +411,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
                     Thread.sleep(sleepTime/1000000L); // nano -> ms
                 }
                 catch(InterruptedException ex) {
-                    overSleepTime = (com.sun.j3d.utils.timer.J3DTimer.getValue() -
+                    overSleepTime = (java.lang.System.nanoTime() -
                             afterTime) - sleepTime;
             
                 }
@@ -322,7 +426,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
                 }
             }
             
-            beforeTime = com.sun.j3d.utils.timer.J3DTimer.getValue();
+            beforeTime = java.lang.System.nanoTime(); 
             
             /*
              * if frame animation is taking too long, update the game state
@@ -379,7 +483,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
 
         
         if (dbImage == null) {
-            dbImage = (java.awt.image.BufferedImage) createImage(PWIDTH, PHEIGHT);
+            dbImage = (java.awt.image.BufferedImage) createImage(panelWidth, panelHeight);
             
             if (dbImage == null) {
                 System.out.println("Error: dbImage is null");
@@ -423,8 +527,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
             // code to calculate the x and y
             int sizePerChar = theFont.getSize();
 
-            int x = (PWIDTH - (msg.length() / 2 * sizePerChar)) / 2;
-            int y = PHEIGHT / 2;
+            int x = (panelWidth - (msg.length() / 2 * sizePerChar)) / 2;
+            int y = panelHeight / 2;
             g.setColor(java.awt.Color.BLACK);
             g.drawString(msg, x, y);
         }
@@ -449,17 +553,17 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setPreferredSize(new java.awt.Dimension(PWIDTH, PHEIGHT));
+        setPreferredSize(new java.awt.Dimension(panelWidth, panelHeight));
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 400, Short.MAX_VALUE)
+            .add(0, 10, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-            .add(0, 300, Short.MAX_VALUE)
+            .add(0, 10, Short.MAX_VALUE)
         );
     }// </editor-fold>//GEN-END:initComponents
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -514,7 +618,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
         statsInterval += period;
 
         if (statsInterval >= MAX_STATS_INTERVAL) {
-            long timeNow = com.sun.j3d.utils.timer.J3DTimer.getValue();
+            
+            long timeNow = java.lang.System.nanoTime(); 
             timeSpentInGame = (int) ((timeNow - gameStartTime)/1000000000L);
         
         
@@ -605,9 +710,21 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
         return averageUPS;
     }
 
- 
+    public static int getPanelWidth() {
+        return panelWidth;
+    }
 
-    
+    public static int getPanelHeight() {
+        return panelHeight;
+    }
+
+    public static void setScreenDimensions(int width, int height) {
+        if (width > 0)
+            panelWidth = width;
+        
+        if (width > 0)
+            panelHeight = height;
+    }
     
    
 }  // end of paintScreen()
