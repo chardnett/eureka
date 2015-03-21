@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package GamePanel;
+package Eureka;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -11,11 +11,11 @@ import java.awt.RenderingHints;
 import java.text.DecimalFormat;
 
 /**
- * GamePanel is based on the code from Chapter 2. It includes the main game
+ * EurekaPanel is based on the code from Chapter 2. It includes the main game
  * loop, timing control for FPS/UPS, and keyboard and mouse events.
  * @author hardnett
  */
-public class GamePanel extends javax.swing.JPanel implements Runnable{
+public class EurekaPanel extends javax.swing.JPanel implements Runnable{
 
     /**
      * The width of the game panel where the screen is drawn
@@ -60,18 +60,18 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
      * your version of the customizeGameRender() method of your derived class. 
      * @see #customizeGameRender() 
      */
-    protected java.awt.Graphics2D dbg;
+    protected java.awt.Graphics2D theCanvas;
     
     /**
      * The background double buffered image. The screen is drawn here by the game
-     * engine before it is painted onto the dbg.
+ engine before it is painted onto the theCanvas.
      */
-    protected java.awt.image.BufferedImage dbImage = null;
+    protected java.awt.image.BufferedImage theCanvasBufferedImage = null;
     
     /**
      * This is the string that holds the game over message.
      */
-    protected String msg = "THE GAME IS OVER";
+    protected String gameOverMessage = "THE GAME IS OVER";
     
     /**
      * This is the desired frames per second (FPS)
@@ -134,7 +134,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
      * @see #storeStats() 
      * @param p The period
      */
-    public GamePanel(long p) {
+    public EurekaPanel(long p) {
         initComponents();
         
         setFocusable(true);
@@ -152,7 +152,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
         addMouseListener(new java.awt.event.MouseAdapter() {
             @Override
             public void mousePressed(java.awt.event.MouseEvent e) {
-                testPress(e.getX(), e.getY()); }
+                mousePress(e.getX(), e.getY()); }
 
         });
         
@@ -171,14 +171,14 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
          }
          catch (UnsupportedOperationException e){}
         
-    }  // end of GamePanel(long)
+    }  // end of EurekaPanel(long)
 
 
     /***
      * The default constructor that sets period to the default period of the game
      * loop to 1000/FPS ms. 
      */
-    public GamePanel() {
+    public EurekaPanel() {
         this(1000/FPS);
     }
     
@@ -211,10 +211,10 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     
     /**
      * This method is used to set the message to display as the game over message.
-     * @param msg the string containing the game over message
+     * @param gameOverMessage the string containing the game over message
      */
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setGameOverMessage(String gameOverMessage) {
+        this.gameOverMessage = gameOverMessage;
     }
 
     /**
@@ -232,7 +232,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     /**
      * The purpose of this method is to allow customization of the constructor
      * for the Gamepanel class. This is where you will put code that you would 
-     * like to execute as your GamePanel derived class object is being constructed. 
+ like to execute as your EurekaPanel derived class object is being constructed. 
      * @see #GamePanel(long) 
      * @see GamePanel.GamePanel
      */
@@ -267,7 +267,7 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
      * @param x is the value of the x-coordinate of the mouse click
      * @param y is the value of the y-coordinate of the mouse click
      */            
-    public void customizeTestPress(int x, int y) {
+    public void customizeMousePress(int x, int y) {
         throw new UnsupportedOperationException("customizeTestPress(): Not yet implemented");
     }
     
@@ -307,11 +307,11 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
      * @param y the y-coordinate of the mouse
      * @see #GamePanel(long) 
      */
-     private void testPress(int x, int y) {
+     private void mousePress(int x, int y) {
          if (!isPaused && !gameOver) {
              // do something with x and y
              try {
-                 customizeTestPress(x, y);
+                 customizeMousePress(x, y);
                  
              }
              catch (UnsupportedOperationException e){}
@@ -482,29 +482,29 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
         
 
         
-        if (dbImage == null) {
-            dbImage = (java.awt.image.BufferedImage) createImage(panelWidth, panelHeight);
+        if (theCanvasBufferedImage == null) {
+            theCanvasBufferedImage = (java.awt.image.BufferedImage) createImage(panelWidth, panelHeight);
             
-            if (dbImage == null) {
+            if (theCanvasBufferedImage == null) {
                 System.out.println("Error: dbImage is null");
                 System.exit(1);
 //                return;
             }
         } else {
-            dbg = (Graphics2D)dbImage.getGraphics();
-            dbg.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            dbg.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            theCanvas = (Graphics2D)theCanvasBufferedImage.getGraphics();
+            theCanvas.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            theCanvas.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
             
         }
         
         // draw game elements
         if (gameOver) {
-            gameOverMessage(dbg);
+            gameOverMessage(theCanvas);
         }
         
         try {
             // calls the customization method for rendering
-           if (dbg != null) {
+           if (theCanvas != null) {
                customizeGameRender();
            }
         }
@@ -527,10 +527,10 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
             // code to calculate the x and y
             int sizePerChar = theFont.getSize();
 
-            int x = (panelWidth - (msg.length() / 2 * sizePerChar)) / 2;
+            int x = (panelWidth - (gameOverMessage.length() / 2 * sizePerChar)) / 2;
             int y = panelHeight / 2;
             g.setColor(java.awt.Color.BLACK);
-            g.drawString(msg, x, y);
+            g.drawString(gameOverMessage, x, y);
         }
         
     } // end of gameOverMessage
@@ -539,8 +539,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
     public void paintComponent(java.awt.Graphics g) {
         super.paintComponent(g);
         
-        if (dbImage != null)
-            g.drawImage(dbImage, 0, 0, null);
+        if (theCanvasBufferedImage != null)
+            g.drawImage(theCanvasBufferedImage, 0, 0, null);
     }
     
     
@@ -597,8 +597,8 @@ public class GamePanel extends javax.swing.JPanel implements Runnable{
         
         try {
             g = this.getGraphics(); // get the panel's graphic context
-            if ((g != null) && (dbImage != null))
-                g.drawImage(dbImage, 0, 0, null);
+            if ((g != null) && (theCanvasBufferedImage != null))
+                g.drawImage(theCanvasBufferedImage, 0, 0, null);
             
             java.awt.Toolkit.getDefaultToolkit().sync(); // sync the display
             g.dispose();

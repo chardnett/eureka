@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package GamePanel;
+package Eureka;
 
 import java.awt.Color;
 import java.awt.Graphics;
