@@ -15,7 +15,7 @@ import java.text.DecimalFormat;
  * loop, timing control for FPS/UPS, and keyboard and mouse events.
  * @author hardnett
  */
-public class EurekaPanel extends javax.swing.JPanel implements Runnable{
+public abstract class EurekaPanel extends javax.swing.JPanel implements Runnable{
 
     /**
      * The width of the game panel where the screen is drawn
@@ -236,9 +236,9 @@ public class EurekaPanel extends javax.swing.JPanel implements Runnable{
      * @see #GamePanel(long) 
      * @see GamePanel.GamePanel
      */
-    public void customizeInit() {
-        throw new UnsupportedOperationException("Not yet implemented");
-    }
+    public abstract void customizeInit();
+//        throw new UnsupportedOperationException("Not yet implemented");
+//    }
     
     /**
      * The purpose of this method is to allow customization of the frame rendering
@@ -246,9 +246,10 @@ public class EurekaPanel extends javax.swing.JPanel implements Runnable{
      * the game loop (see the run()) method.
      * @see #run() 
      */
-    public void customizeGameRender() {
-            throw new UnsupportedOperationException("customizeGameRender(): Not yet implemented");
-    }
+    public abstract void customizeGameRender();
+    //{
+//            throw new UnsupportedOperationException("customizeGameRender(): Not yet implemented");
+//    }
     
     /**
      * The purpose of this method is to allow customization of the frame update 
@@ -256,9 +257,10 @@ public class EurekaPanel extends javax.swing.JPanel implements Runnable{
      * the game loop (see the run()) method. 
      * @see #run() 
      */
-    public void customizeGameUpdate() {
-            throw new UnsupportedOperationException("customizeGameUpdate(): Not yet implemented");
-    }
+    public abstract void customizeGameUpdate(); 
+    //{
+//            throw new UnsupportedOperationException("customizeGameUpdate(): Not yet implemented");
+//    }
     
     /**
      * The purpose of this method is to allow customization of your games' 
@@ -267,9 +269,10 @@ public class EurekaPanel extends javax.swing.JPanel implements Runnable{
      * @param x is the value of the x-coordinate of the mouse click
      * @param y is the value of the y-coordinate of the mouse click
      */            
-    public void customizeMousePress(int x, int y) {
-        throw new UnsupportedOperationException("customizeTestPress(): Not yet implemented");
-    }
+    public abstract void customizeMousePress(int x, int y);
+    //{
+//        throw new UnsupportedOperationException("customizeTestPress(): Not yet implemented");
+//    }
     
     
     /**
@@ -278,7 +281,8 @@ public class EurekaPanel extends javax.swing.JPanel implements Runnable{
      * is overridable and is called within the game loop (see the run()) method.
      * @see #run()
      */
-    protected void preGameLoop() {
+    protected void preGameLoop()
+    {
         throw new UnsupportedOperationException("Not yet implemented");
     }
 
